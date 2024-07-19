@@ -19,7 +19,7 @@ app.use("/person", personRoutes);
 //Using the Menu Router
 app.use("/menu", menuRoutes);
 //using .env variable
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
 });
