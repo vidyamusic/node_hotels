@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 //Importing Router Files -
 const personRoutes = require("./routes/personRoutes");
 const menuRoutes = require("./routes/menuRoutes");
+//Importing .env for sensitive info
+require("dotenv").config();
 app.use(bodyParser.json()); //stores all data in req.body
 app.get("/", (req, res) => {
   res.send("Hello, World!");
@@ -16,7 +18,8 @@ app.get("/", (req, res) => {
 app.use("/person", personRoutes);
 //Using the Menu Router
 app.use("/menu", menuRoutes);
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+//using .env variable
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
 });
