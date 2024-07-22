@@ -4,9 +4,9 @@ const db = require("./db");
 const Person = require("./models/Person");
 const MenuItem = require("./models/MenuItem");
 const bodyParser = require("body-parser");
-const passport = require("./auth");
+//const passport = require("./auth");
 //Initializing passport
-app.use(passport.initialize());
+//app.use(passport.initialize());
 //Importing Router Files -
 const personRoutes = require("./routes/personRoutes");
 const menuRoutes = require("./routes/menuRoutes");
@@ -21,7 +21,7 @@ const logRequest = (req, res, next) => {
   next(); //Move on to the next phase.
 };
 //pass the logRequest (middleware function) to the get function.
-const localAuthMiddleware = passport.authenticate("local", { session: false });
+//const localAuthMiddleware = passport.authenticate("local", { session: false });
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 app.use(logRequest);
 //in order to use only for one route , we can add middleware into the given use
 //Using the Person Router
-app.use("/person", localAuthMiddleware, personRoutes);
+app.use("/person", personRoutes);
 //Using the Menu Router
 app.use("/menu", menuRoutes);
 //using .env variable

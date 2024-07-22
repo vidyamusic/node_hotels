@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Person = require("../models/Person");
+const { jwtAuthMiddleware, generateToken } = require("../jwt");
 //using the async instead of previously used callback function is industry practice
-router.post("/", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const data = req.body; //assuming the request body contains the person data
     //create a new person document using the Mongoose model
@@ -11,14 +12,43 @@ router.post("/", async (req, res) => {
     //Save the new person to the database
     const savedPerson = await newPerson.save();
     console.log("data saved");
-    res.status(200).json(savedPerson);
+    const payload = {
+      id: savedPerson.id, //we don'e need to write _id
+    };
+    const token = generateToken(payload);
+    console.log("token is:", token);
+    res.status(200).json({ response: savedPerson, token: token });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+//login route
+router.post("/login", async (req, res) => {
+  try {
+    //Extract username and paswrod from request body
+    const { username, password } = req.body;
+    //find the user by username
+    const user = await Person.findOne({ username: username });
+    //If user does not exists or password does not match, return error
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+    //generate token
+    const payload = {
+      id: user.id,
+      username: user.username,
+    };
+    const token = generateToken(payload);
+    //return token as response
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Interna Server Error" });
+  }
+});
 //Get method to get the person
-router.get("/", async (req, res) => {
+router.get("/", jwtAuthMiddleware, async (req, res) => {
   try {
     const data = await Person.find();
     console.log("data fetched");
